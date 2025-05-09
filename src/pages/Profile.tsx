@@ -1,11 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { User } from '../types';
 
-function Profile({ user, isAuthenticated }) {
+interface ProfileProps {
+  user: User | null;
+  isAuthenticated: boolean;
+}
+
+interface UserPost {
+  id: number;
+  title: string;
+  date: string;
+  options: UserPostOption[];
+  totalVotes: number;
+  comments: number;
+}
+
+interface UserPostOption {
+  id: number;
+  imageUrl: string;
+  votes: number;
+}
+
+interface UserVote {
+  postId: number;
+  postTitle: string;
+  date: string;
+  optionVoted: string;
+}
+
+const Profile: React.FC<ProfileProps> = ({ user, isAuthenticated }) => {
   const navigate = useNavigate();
-  const [userPosts, setUserPosts] = useState([]);
-  const [userVotes, setUserVotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [userPosts, setUserPosts] = useState<UserPost[]>([]);
+  const [userVotes, setUserVotes] = useState<UserVote[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -15,36 +43,36 @@ function Profile({ user, isAuthenticated }) {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserData = async (): Promise<void> => {
       try {
         // In a real app, you would fetch from API
         // const posts = await fetchUserPosts(user.id);
         // const votes = await fetchUserVotes(user.id);
         
         // For demo purposes, use mock data
-        const mockPosts = [
+        const mockPosts: UserPost[] = [
           {
-            id: '3',
+            id: 3,
             title: 'Which jacket for fall?',
             date: '2023-09-15T10:30:00Z',
             options: [
-              { id: 'option1', imageUrl: 'https://via.placeholder.com/300x400', votes: 18 },
-              { id: 'option2', imageUrl: 'https://via.placeholder.com/300x400', votes: 27 }
+              { id: 1, imageUrl: 'https://via.placeholder.com/300x400', votes: 18 },
+              { id: 2, imageUrl: 'https://via.placeholder.com/300x400', votes: 27 }
             ],
             totalVotes: 45,
             comments: 12
           }
         ];
         
-        const mockVotes = [
+        const mockVotes: UserVote[] = [
           {
-            postId: '1',
+            postId: 1,
             postTitle: 'Which dress for a summer wedding?',
             date: '2023-05-20T14:45:00Z',
             optionVoted: 'option1'
           },
           {
-            postId: '2',
+            postId: 2,
             postTitle: 'Help me pick shoes for my interview',
             date: '2023-06-10T09:15:00Z',
             optionVoted: 'option2'
@@ -92,7 +120,7 @@ function Profile({ user, isAuthenticated }) {
                     <h4>{post.title}</h4>
                     <div className="post-thumbnails">
                       {post.options.slice(0, 2).map((option, index) => (
-                        <img key={index} src={option.imageUrl} alt={`Option ${index + 1}`} />
+                        <img key={option.id} src={option.imageUrl} alt={`Option ${index + 1}`} />
                       ))}
                     </div>
                     <div className="post-meta">
@@ -128,6 +156,6 @@ function Profile({ user, isAuthenticated }) {
       )}
     </div>
   );
-}
+};
 
 export default Profile;

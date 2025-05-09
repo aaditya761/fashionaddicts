@@ -23,22 +23,13 @@ export interface User {
 
   export interface Option {
     id: number;
-    imageUrl: string;
-    votes: number;
-    hasUserVoted: boolean;
-    description: string;
-    price: number;
-    store: string;
     url: string;
   }
   
  export interface Post {
     id: number;
     title: string;
-    user: {
-      id: number;
-      username: string;
-    };
+    user: User,
     options: Option[];
     comments: Comment[];
   }

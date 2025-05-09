@@ -47,7 +47,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
       const mockResponse: AuthResponse = {
         token: 'mock-token-12345',
         user: {
-          id: 'user1',
+          id: 1,
           username: 'fashionlover',
           email: formData.email
         }

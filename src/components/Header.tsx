@@ -1,11 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-}
+import { User } from '../types';
 
 interface HeaderProps {
   isAuthenticated: boolean;

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Option } from '../types';
+import Select from 'react-select';
+import '../css/CreatePost.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 
 // Define props interface for CreatePost component
@@ -12,13 +16,28 @@ interface CreatePostProps {
 const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [selectedOption, setSelectedOption] = useState<{ value: string; label: string; } | null>(null);
   const [options, setOptions] = useState<Option[]>([
-    {id:1, imageUrl: '', description: '', price: 0, store: '', url: '', hasUserVoted:false, votes:2 },
-    {id:2, imageUrl: '', description: '', price: 0, store: '', url: '', hasUserVoted:false, votes:10 }
+    {id:1, url: ''},
+    {id:2, url: ''}
   ]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{'list': 'ordered'}, {'list': 'bullet'}],
+      [{'color': []}, {'background': []}],
+      [{'align': []}],
+      ['link', 'image'],
+      ['clean']
+    ],
+  };
+
+  
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
@@ -30,6 +49,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
     return null;
   }
 
+
+  const dropdownOptions = [
+    { value: 'choose', label: 'Help me choose one' },
+    { value: 'look', label: 'How do I look?' },
+  ];
+
   const handleOptionChange = (index: number, field: keyof Option, value: string): void => {
     const newOptions = [...options];
     newOptions[index] = { ...newOptions[index], [field]: value };
@@ -38,7 +63,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
 
   const addOption = (): void => {
     if (options.length < 5) { // Limit to 5 options
-      setOptions([...options, {id:3, imageUrl: '', description: '', price: 0, store: '', url: '', hasUserVoted:false, votes:2 }]);
+      setOptions([...options, {id:3, url: '' }]);
     }
   };
 
@@ -55,18 +80,15 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
     setError('');
 
     try {
+      console.log("fffffffffffffffffffffffffffffffffffffffffffff")
+      console.log(selectedOption)
+      console.log(title)
+      console.log(description)
+      console.log(options)
       // Validate form
       if (!title.trim()) {
         throw new Error('Please enter a title');
       }
-
-      for (let i = 0; i < options.length; i++) {
-        const option = options[i];
-        if (!option.imageUrl || !option.description) {
-          throw new Error(`Please fill in all required fields for option ${i + 1}`);
-        }
-      }
-
       // In a real app, you would call the API here
       // if (user) {
       //   const newPost = await createPost({ 
@@ -96,9 +118,23 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
     <div className="create-post-page">
       <h2>Create a New Post</h2>
       {error && <div className="error-message">{error}</div>}
+
+      
       
       <form onSubmit={handleSubmit} className="create-post-form">
+      
+      <label htmlFor="post-type">Post Type</label>
         <div className="form-group">
+        <Select
+        id="post-type"
+        defaultValue={selectedOption}
+        onChange={setSelectedOption}
+        options={dropdownOptions}
+      />
+      </div>
+
+
+      <div className="form-group">
           <label htmlFor="title">Title</label>
           <input
             type="text"
@@ -110,63 +146,30 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
           />
         </div>
         
+
+        <div className="form-group">
+          <label htmlFor="title">Description</label>
+          <ReactQuill 
+        theme="snow" 
+        value={description} 
+        onChange={setDescription} 
+        modules={modules}
+      />
+        </div>
+
         <h3>Options</h3>
+        <div className='option-container'>
         {options.map((option, index) => (
           <div key={index} className="option-form">
             <h4>Option {index + 1}</h4>
             <div className="form-group">
-              <label>Image URL</label>
-              <input
-                type="url"
-                value={option.imageUrl}
-                onChange={(e) => handleOptionChange(index, 'imageUrl', e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Description</label>
-              <input
-                type="text"
-                value={option.description}
-                onChange={(e) => handleOptionChange(index, 'description', e.target.value)}
-                placeholder="E.g., Blue floral dress"
-                required
-              />
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>Price (optional)</label>
-                <input
-                  type="number"
-                  value={option.price}
-                  onChange={(e) => handleOptionChange(index, 'price', e.target.value)}
-                  placeholder="E.g., 49.99"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Store (optional)</label>
-                <input
-                  type="text"
-                  value={option.store}
-                  onChange={(e) => handleOptionChange(index, 'store', e.target.value)}
-                  placeholder="E.g., Zara"
-                />
-              </div>
-            </div>
-            
-            <div className="form-group">
-              <label>Product URL (optional)</label>
+              <label>URL</label>
               <input
                 type="url"
                 value={option.url}
                 onChange={(e) => handleOptionChange(index, 'url', e.target.value)}
-                placeholder="https://example.com/product"
+                placeholder="https://example.com/image.jpg"
+                required
               />
             </div>
             
@@ -181,6 +184,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
             )}
           </div>
         ))}
+
+</div>
         
         {options.length < 5 && (
           <button 

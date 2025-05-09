@@ -1,26 +1,44 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/api';
+import { User } from '../types';
 
-function Register({ setIsAuthenticated, setUser }) {
+interface RegisterProps {
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setUser: (user: User | null) => void;
+}
+
+interface RegisterFormData {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+const Register: React.FC<RegisterProps> = ({ setIsAuthenticated, setUser }) => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
@@ -35,10 +53,10 @@ function Register({ setIsAuthenticated, setUser }) {
       // const response = await registerUser(formData);
       
       // For demo purposes, use mock data
-      const mockResponse = {
+      const mockResponse: AuthResponse = {
         token: 'mock-token-12345',
         user: {
-          id: 'user' + Date.now(),
+          id: Date.now(), // Use numeric ID
           username: formData.username,
           email: formData.email
         }
@@ -56,7 +74,7 @@ function Register({ setIsAuthenticated, setUser }) {
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
-      setError(error.message || 'Registration failed');
+      setError(error instanceof Error ? error.message : 'Registration failed');
       setIsSubmitting(false);
     }
   };
@@ -101,7 +119,7 @@ function Register({ setIsAuthenticated, setUser }) {
               value={formData.password}
               onChange={handleChange}
               required
-              minLength="6"
+              minLength={6}
             />
           </div>
           
@@ -132,6 +150,6 @@ function Register({ setIsAuthenticated, setUser }) {
       </div>
     </div>
   );
-}
+};
 
 export default Register;

@@ -11,10 +11,11 @@ import PostDetail from './pages/PostDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import { User } from './types';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
   // Check if user is logged in on component mount
   useEffect(() => {

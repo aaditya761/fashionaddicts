@@ -1,0 +1,368 @@
+/* src/components/Home.css */
+
+/* Main container */
+.home-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Filter buttons */
+  .filters {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .filter-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 1rem;
+    color: #555;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  
+  .filter-btn:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .filter-btn.active {
+    background-color: #ff6b6b;
+    color: white;
+  }
+  
+  /* Posts container */
+  .posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  /* Post card */
+  .post-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+  
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Post header */
+  .post-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f1f1f1;
+  }
+  
+  .post-header h3 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .post-creator {
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  /* Carousel */
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    padding: 20px 0;
+  }
+  
+  .carousel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  .carousel-item {
+    flex: 0 0 auto;
+    width: 100%;
+    scroll-snap-align: start;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  /* For desktop: allow two items to be visible and limit height */
+  @media (min-width: 768px) {
+    .carousel-item {
+      width: 50%;
+    }
+    
+    .option-image-container {
+      max-height: 40vh !important; /* 40% of viewport height on desktop */
+    }
+  }
+  
+  /* Option image container */
+  .option-image-container {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    max-height: 70vh; /* Default for mobile */
+  }
+  
+  .option-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  
+  .carousel-item:hover .option-image {
+    transform: scale(1.05);
+  }
+  
+  /* Voted option styling */
+  .carousel-item.voted-option {
+    position: relative;
+  }
+  
+  .carousel-item.voted-option::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10px;
+    right: 10px;
+    bottom: 0;
+    border: 3px solid #4caf50;
+    border-radius: 10px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .voted-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #4caf50;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+  }
+  
+  /* Vote overlay - now always visible */
+  .vote-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .vote-overlay.always-visible {
+    transform: translateY(0); /* Always visible, no animation needed */
+  }
+  
+  .vote-overlay-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .vote-overlay-btn:hover:not(:disabled) {
+    background-color: #ff5252;
+  }
+  
+  .vote-overlay-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .vote-overlay-btn.voted {
+    background-color: #4caf50;
+  }
+  
+  /* Option info */
+  .option-info {
+    padding: 15px 5px;
+  }
+  
+  .option-description {
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  
+  .votes-bar {
+    height: 6px;
+    background-color: #f1f1f1;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  
+  .votes-fill {
+    height: 100%;
+    background-color: #ff6b6b;
+    transition: width 0.5s ease-out;
+  }
+  
+  .votes-fill.user-vote {
+    background-color: #4caf50;
+  }
+  
+  .votes-text {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 10px;
+  }
+  
+  /* Carousel controls */
+  .carousel-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  
+  .carousel-control {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+    transition: background-color 0.3s;
+  }
+  
+  .carousel-control:hover {
+    background-color: #fff;
+  }
+  
+  .carousel-control.left {
+    margin-left: 10px;
+  }
+  
+  .carousel-control.right {
+    margin-right: 10px;
+  }
+  
+  /* Post meta */
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-top: 1px solid #f1f1f1;
+    font-size: 0.9rem;
+    color: #777;
+  }
+  
+  .view-details-btn {
+    color: #ff6b6b;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  
+  .view-details-btn:hover {
+    color: #ff5252;
+    text-decoration: underline;
+  }
+  
+  /* States */
+  .loading {
+    text-align: center;
+    padding: 50px 0;
+    color: #777;
+    font-size: 1.1rem;
+  }
+  
+  .no-posts {
+    text-align: center;
+    padding: 50px 0;
+    color: #777;
+    font-style: italic;
+  }
+  
+  /* Mobile adjustments */
+  @media (max-width: 767px) {
+    .home-page {
+      padding: 15px;
+    }
+    
+    .filters {
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      margin: 5px;
+    }
+    
+    .carousel-item {
+      width: 80%; /* Show one full item and part of the next */
+    }
+    
+    .post-meta {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    
+    .carousel-control {
+      width: 35px;
+      height: 35px;
+    }
+  }
+  
+  /* For very small screens */
+  @media (max-width: 480px) {
+    .post-header h3 {
+      font-size: 1.2rem;
+    }
+    
+    .carousel-item {
+      width: 85%;
+    }
+    
+    .vote-overlay-btn {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+  }

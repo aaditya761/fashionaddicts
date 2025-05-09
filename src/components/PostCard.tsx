@@ -11,7 +11,7 @@ interface PostCardProps {
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
   // Calculate percentage of votes for each option
-  const totalVotes = post.options.reduce((sum, option) => sum + option.votes, 0);
+  const totalVotes = post.options.reduce((sum, option) => sum + 1, 0);
   
   return (
     <div className="post-card">
@@ -20,14 +20,14 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
       <div className="post-options-preview">
         {post.options.slice(0, 2).map((option, index) => (
           <div key={index} className="option-preview">
-            <img src={option.imageUrl} alt={`Option ${index + 1}`} />
+            <img src={option.url} alt={`Option ${index + 1}`} />
             <div className="votes-bar">
               <div 
                 className="votes-fill" 
-                style={{ width: `${totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0}%` }}
+                style={{ width: `${totalVotes > 0 ? (1) * 100 : 0}%` }}
               ></div>
             </div>
-            <p>{totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0}% votes</p>
+            <p>{totalVotes > 0 ? Math.round((1) * 100) : 0}% votes</p>
           </div>
         ))}
         {post.options.length > 2 && <p className="more-options">+{post.options.length - 2} more options</p>}

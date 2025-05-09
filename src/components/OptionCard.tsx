@@ -1,11 +1,10 @@
 import React from 'react';
-import {Option} from '../types';
+import { Option } from '../types';
 
-// Define props interface for OptionCard component
 interface OptionCardProps {
   option: Option;
   index: number;
-  onVote: (optionId: number) => void;
+  onVote: (optionId: number) => Promise<void>;
   hasVoted: boolean;
   isAuthenticated: boolean;
 }
@@ -17,28 +16,33 @@ const OptionCard: React.FC<OptionCardProps> = ({
   hasVoted, 
   isAuthenticated 
 }) => {
+  /**
+   * Handle the vote button click
+   */
+  const handleVoteClick = async (): Promise<void> => {
+    if (!isAuthenticated) {
+      return; // User must be authenticated to vote
+    }
+    
+    if (hasVoted) {
+      return; // User has already voted
+    }
+    
+    await onVote(option.id);
+  };
+  
   return (
     <div className="option-card">
-      <img src={option.imageUrl} alt={`Option ${index + 1}`} />
+      <img src={option.url} alt={`Option ${index}`} />
       <div className="option-info">
-        <h4>Option {index + 1}</h4>
-        <p>{option.description}</p>
+        <h4>Option {index}</h4>
         <div className="option-meta">
-          <span>{option.price && `$${option.price}`}</span>
-          <span>{option.store}</span>
           {option.url && (
             <a href={option.url} target="_blank" rel="noopener noreferrer">
               Visit Store
             </a>
           )}
         </div>
-        <button 
-          onClick={() => onVote(option.id)} 
-          disabled={hasVoted || !isAuthenticated}
-          className={`vote-btn ${hasVoted && option.hasUserVoted ? 'voted' : ''}`}
-        >
-          {hasVoted && option.hasUserVoted ? 'Voted' : 'Vote'} ({option.votes})
-        </button>
       </div>
     </div>
   );
