@@ -1,38 +1,82 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { User } from '../types';
+// src/components/Header.tsx
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import AuthStatus from './AuthStatus';
+import styles from '../css/Header.module.css';
 
-interface HeaderProps {
-  isAuthenticated: boolean;
-  user: User | null;
-  onLogout: () => void;
-}
+const Header: React.FC = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const location = useLocation();
 
-const Header: React.FC<HeaderProps> = ({ isAuthenticated, user, onLogout }) => {
+  // Close mobile menu on location change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
+  // Close menu on window resize if screen becomes larger
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768 && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMenuOpen]);
+
   return (
-    <header className="header">
-      <div className="logo">
-        <Link to="/">FashionVote</Link>
+    <header className={styles.header}>
+      <div className={styles.container}>
+        <div className={styles.logoContainer}>
+          <Link to="/" className={styles.logo}>
+            FashionVote
+          </Link>
+          <button 
+            className={styles.mobileMenuButton}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+
+        <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
+          <ul className={styles.navList}>
+            <li className={styles.navItem}>
+              <Link 
+                to="/" 
+                className={`${styles.navLink} ${location.pathname === '/' ? styles.active : ''}`}
+              >
+                Home
+              </Link>
+            </li>
+            <li className={styles.navItem}>
+              <Link 
+                to="/popular" 
+                className={`${styles.navLink} ${location.pathname === '/popular' ? styles.active : ''}`}
+              >
+                Popular
+              </Link>
+            </li>
+            <li className={styles.navItem}>
+              <Link 
+                to="/trending" 
+                className={`${styles.navLink} ${location.pathname === '/trending' ? styles.active : ''}`}
+              >
+                Trending
+              </Link>
+            </li>
+          </ul>
+          
+          <div className={styles.authContainer}>
+            <AuthStatus />
+          </div>
+        </nav>
       </div>
-      <nav className="nav">
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          {isAuthenticated ? (
-            <>
-              <li><Link to="/create">Create Post</Link></li>
-              <li><Link to="/profile">Profile</Link></li>
-              <li><button onClick={onLogout} className="logout-btn">Logout</button></li>
-            </>
-          ) : (
-            <>
-              <li><Link to="/login">Login</Link></li>
-              <li><Link to="/register">Register</Link></li>
-            </>
-          )}
-        </ul>
-      </nav>
     </header>
   );
-}
+};
 
 export default Header;

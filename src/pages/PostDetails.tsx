@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import OptionCard from '../components/OptionCard';
 import CommentSection from '../components/CommentSection';
-import { fetchPostById, addComment } from '../services/api';
+import { postService, commentService } from '../services/api';
 import { Post, User, Comment } from '../types';
 import { useVoting } from '../hooks/useVoting';
 
@@ -38,7 +38,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ user, isAuthenticated }) => {
       if (!id) return;
       
       try {
-        const fetchedPost = await fetchPostById(id);
+        const fetchedPost = await postService.getPostById(id);
         
         if (fetchedPost) {
           setPost(fetchedPost);
@@ -62,7 +62,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ user, isAuthenticated }) => {
     
     try {
       // Call the API to add a comment
-      const commentWithId = await addComment(post.id, newComment);
+      const commentWithId = await commentService.addComment(post.id, newComment);
       
       // Update the post with the new comment
       setPost({

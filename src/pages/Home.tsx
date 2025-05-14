@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchPosts } from '../services/api';
-import { Post, FilterType } from '../types';
+import { postService } from '../services/api';
+import { Post, FilterType, FilterPostsDto } from '../types';
 import '../css/Home.css';
 
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [filter, setFilter] = useState<FilterType>('recent');
+  const [filter, setFilter] = useState<FilterPostsDto>({page:1, limit:10, filter: FilterType.RECENT});
   const [userVotes, setUserVotes] = useState<Record<number, number>>({});
 
   // Fetch posts
   useEffect(() => {
     const getPosts = async (): Promise<void> => {
       try {
-        const data = await fetchPosts(filter);
+        const data = await postService.getPosts(filter);
         setPosts(data);
         setLoading(false);
       } catch (error) {
@@ -120,20 +120,20 @@ const Home: React.FC = () => {
     <div className="home-page">
       <div className="filters">
         <button 
-          className={`filter-btn ${filter === 'recent' ? 'active' : ''}`} 
-          onClick={() => setFilter('recent')}
+          className={`filter-btn ${filter.filter === 'recent' ? 'active' : ''}`} 
+          onClick={() => setFilter({...filter, 'filter': FilterType.RECENT})}
         >
           Recent
         </button>
         <button 
-          className={`filter-btn ${filter === 'popular' ? 'active' : ''}`} 
-          onClick={() => setFilter('popular')}
+          className={`filter-btn ${filter.filter === 'popular' ? 'active' : ''}`} 
+          onClick={() => setFilter({...filter, 'filter': FilterType.POPULAR})}
         >
           Popular
         </button>
         <button 
-          className={`filter-btn ${filter === 'trending' ? 'active' : ''}`} 
-          onClick={() => setFilter('trending')}
+          className={`filter-btn ${filter.filter === 'trending' ? 'active' : ''}`} 
+          onClick={() => setFilter({...filter, 'filter':FilterType.TRENDING})}
         >
           Trending
         </button>

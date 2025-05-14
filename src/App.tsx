@@ -1,58 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import './App.css';
+// src/App.tsx
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Components
 import Header from './components/Header';
 import Footer from './components/Footer';
+import PrivateRoute from './components/PrivateRoute';
+
+// Pages
 import Home from './pages/Home';
-import CreatePost from './pages/CreatePost';
-import PostDetail from './pages/PostDetails';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CreatePost from './pages/CreatePost';
+import PostDetail from './pages/PostDetails';
 import Profile from './pages/Profile';
-import { User } from './types';
+import NotFound from './pages/NotFound';
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+// Context
+import { AuthProvider } from './context/AuthContext';
 
-  // Check if user is logged in on component mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(userData));
-    }
-  }, []);
+// Styles
+import './App.css';
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-    setUser(null);
-  };
-
+const App: React.FC = () => {
   return (
-    <Router>
-      <div className="app">
-        <Header isAuthenticated={isAuthenticated} user={user} onLogout={handleLogout} />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/create" element={<CreatePost user={user} isAuthenticated={isAuthenticated} />} />
-            <Route path="/post/:id" element={<PostDetail user={user} isAuthenticated={isAuthenticated} />} />
-            <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setUser={setUser} />} />
-            <Route path="/register" element={<Register setIsAuthenticated={setIsAuthenticated} setUser={setUser} />} />
-            <Route path="/profile" element={<Profile user={user} isAuthenticated={isAuthenticated} />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <BrowserRouter>
+      <AuthProvider>
+        <div className="app">
+          <Header />
+          <main className="main-content">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/post/:id" element={<PostDetail />} />
+              
+              {/* Protected routes */}
+              <Route 
+                path="/create-post" 
+                element={
+                  <PrivateRoute>
+                    <CreatePost />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                } 
+              />
+              
+              {/* 404 and redirects */}
+              <Route path="/404" element={<NotFound />} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </main>
+          <Footer />
+          
+          {/* Toast notifications */}
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </div>
+      </AuthProvider>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;

@@ -1,0 +1,195 @@
+/* src/pages/Auth.module.css */
+
+.authContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
+    padding: 2rem 1rem;
+    background-color: #f8f9fa;
+  }
+  
+  .authCard {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 450px;
+    padding: 2.5rem;
+  }
+  
+  .authHeader {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .authTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .authMessage {
+    background-color: #fff8e1;
+    color: #ff8f00;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    margin: 1rem 0;
+  }
+  
+  .authForm {
+    margin-bottom: 2rem;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+  }
+  
+  .inputGroup {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .inputIcon {
+    position: absolute;
+    left: 1rem;
+    color: #777;
+  }
+  
+  .input,
+  .inputError {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+  }
+  
+  .inputError {
+    border-color: #e74c3c;
+    background-color: #fff6f6;
+  }
+  
+  .inputError:focus {
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+  }
+  
+  .errorText {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+  
+  .errorMessage {
+    background-color: #fdecea;
+    color: #e74c3c;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .forgotPassword {
+    text-align: right;
+    margin-bottom: 1.5rem;
+  }
+  
+  .forgotPassword a {
+    color: #555;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  
+  .forgotPassword a:hover {
+    color: #ff6b6b;
+    text-decoration: underline;
+  }
+  
+  .authButton {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .authButton:hover:not(:disabled) {
+    background-color: #ff5252;
+  }
+  
+  .authButton:disabled {
+    background-color: #ffb8b8;
+    cursor: not-allowed;
+  }
+  
+  .authFooter {
+    text-align: center;
+    color: #666;
+  }
+  
+  .authLink {
+    color: #ff6b6b;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  
+  .authLink:hover {
+    text-decoration: underline;
+  }
+  
+  .authDivider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: #999;
+  }
+  
+  .authDivider::before,
+  .authDivider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #eee;
+  }
+  
+  .authDivider span {
+    margin: 0 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 500px) {
+    .authCard {
+      padding: 1.5rem;
+    }
+    
+    .authTitle {
+      font-size: 1.75rem;
+    }
+  }

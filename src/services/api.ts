@@ -1,183 +1,131 @@
 // src/services/api.ts
-import { Post, User, Comment, FilterType } from '../types';
-import { getMockPosts } from './mockData';
+import axios from 'axios';
+import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto } from '../types';
 
-/**
- * Fetches posts based on the specified filter
- */
-export const fetchPosts = async (filter: FilterType): Promise<Post[]> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Use the mock data generator
-      const posts = getMockPosts(filter);
-      resolve(posts);
-    }, 500);
-  });
+// Set base URL from environment variable
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+// Create axios instance
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add request interceptor for authentication
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+
+// Auth services
+export const authService = {
+  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>('/auth/login', credentials);
+    return response.data;
+  },
+  
+  register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>('/auth/register', credentials);
+    return response.data;
+  },
 };
 
-/**
- * Fetches a post by its ID
- */
-export const fetchPostById = async (id: number): Promise<Post | null> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Get all posts and find the one with matching ID
-      const allPosts = getMockPosts('recent');
-      const post = allPosts.find(post => post.id === id) || null;
-      resolve(post);
-    }, 500);
-  });
+// User services
+export const userService = {
+  getProfile: async (): Promise<User> => {
+    const response = await api.get<User>('/users/profile');
+    return response.data;
+  },
+  
+  updateProfile: async (userData: Partial<User>): Promise<User> => {
+    const response = await api.patch<User>('/users/profile', userData);
+    return response.data;
+  },
+  
+  getUserById: async (id: number): Promise<User> => {
+    const response = await api.get<User>(`/users/${id}`);
+    return response.data;
+  },
 };
 
-interface PostData {
-  title: string;
-  options: any[];
-  userId: number;
-}
-
-/**
- * Creates a new post
- */
-export const createPost = async (postData: PostData): Promise<Post> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Get existing posts to determine new ID
-      const allPosts = getMockPosts('recent');
-      const newId = Math.max(...allPosts.map(post => post.id)) + 1;
-      
-      // Create the new post
-      const newPost: Post = { 
-        id: newId,
-        title: postData.title,
-        user: { 
-          id: postData.userId, 
-          username: 'current-user' 
-        },
-        options: postData.options.map((option, index) => ({
-          ...option,
-          id: (newId * 1000) + index + 1, // Generate unique option IDs
-          votes: 0
-        })),
-        comments: []
-      };
-      
-      resolve(newPost);
-    }, 500);
-  });
+// Post services
+export const postService = {
+  createPost: async (postData: CreatePostDto): Promise<Post> => {
+    const response = await api.post<Post>('/posts', postData);
+    return response.data;
+  },
+  
+  getPosts: async (filter: FilterPostsDto = {}): Promise<Post[]> => {
+    const { page = 1, limit = 10, filter: filterType = FilterType.RECENT } = filter;
+    const response = await api.get<Post[]>('/posts', {
+      params: { page, limit, filter: filterType },
+    });
+    return response.data;
+  },
+  
+  getPostById: async (id: number): Promise<Post> => {
+    const response = await api.get<Post>(`/posts/${id}`);
+    return response.data;
+  },
+  
+  getUserPosts: async (): Promise<Post[]> => {
+    const response = await api.get<Post[]>('/posts/user/me');
+    return response.data;
+  },
+  
+  getUserVotes: async (): Promise<{ postId: number, optionId: number, post: Post }[]> => {
+    const response = await api.get<{ postId: number, optionId: number, post: Post }[]>('/posts/user/votes');
+    return response.data;
+  },
+  
+  deletePost: async (id: number): Promise<void> => {
+    await api.delete(`/posts/${id}`);
+  },
 };
 
-interface VoteResponse {
-  success: boolean;
-}
+// Comment services
+export const commentService = {
+  getComments: async (postId: number): Promise<Comment[]> => {
+    const response = await api.get<Comment[]>(`/posts/${postId}/comments`);
+    return response.data;
+  },
 
-/**
- * Votes on a specific option for a post
- */
-export const voteOnOption = async (postId: number, optionId: number): Promise<VoteResponse> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // In a real app, this would update the database
-      resolve({ success: true });
-    }, 300);
-  });
+  addComment: async (postId: number, comment:Partial<Comment>): Promise<Comment> => {
+    const response = await api.post<Comment>(`/posts/${postId}/comments`, comment);
+    return response.data;
+  },
+  
+  deleteComment: async (postId: number, commentId: number): Promise<void> => {
+    await api.delete(`/posts/${postId}/comments/${commentId}`);
+  },
 };
 
-/**
- * Adds a comment to a post
- */
-export const addComment = async (postId: number, comment: Partial<Comment>): Promise<Comment> => {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Get existing posts to determine new comment ID
-      const allPosts = getMockPosts('recent');
-      const post = allPosts.find(p => p.id === postId);
-      
-      // Generate a unique comment ID based on post ID
-      const commentId = post ? 
-        (postId * 10000) + (post.comments.length + 1) : 
-        Date.now();
-      
-      // Create the new comment
-      const newComment: Comment = { 
-        id: commentId,
-        text: comment.text || '',
-        userId: comment.userId || 0,
-        username: comment.username || '',
-        createdAt: new Date().toISOString(),
-        postId
-      };
-      
-      resolve(newComment);
-    }, 300);
-  });
+// Vote services
+export const voteService = {
+  vote: async (postId: number, voteData: CreateVoteDto): Promise<void> => {
+    await api.post(`/posts/${postId}/votes`, voteData);
+  },
+  
+  getVotes: async (postId: number): Promise<{ optionId: number, count: number }[]> => {
+    const response = await api.get<{ optionId: number, count: number }[]>(`/posts/${postId}/votes`);
+    return response.data;
+  },
+  
+  hasVoted: async (postId: number): Promise<{ hasVoted: boolean, optionId?: number }> => {
+    const response = await api.get<{ hasVoted: boolean, optionId?: number }>(`/posts/${postId}/votes/user`);
+    return response.data;
+  },
 };
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-interface AuthResponse {
-  token: string;
-  user: User;
-}
-
-/**
- * Authenticates a user with email and password
- */
-export const loginUser = async (credentials: LoginCredentials): Promise<AuthResponse> => {
-  // Simulate API call
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Dummy validation
-      if (credentials.email && credentials.password) {
-        resolve({
-          token: 'mock-token-' + Date.now(),
-          user: {
-            id: 101, // Using a consistent ID from our mock data
-            username: 'fashionlover',
-            email: credentials.email
-          }
-        });
-      } else {
-        reject(new Error('Invalid credentials'));
-      }
-    }, 500);
-  });
-};
-
-interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword?: string;
-}
-
-/**
- * Registers a new user
- */
-export const registerUser = async (userData: RegisterData): Promise<AuthResponse> => {
-  // Simulate API call
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Dummy validation
-      if (userData.username && userData.email && userData.password) {
-        resolve({
-          token: 'mock-token-' + Date.now(),
-          user: {
-            id: Date.now(), // Generate unique user ID
-            username: userData.username,
-            email: userData.email
-          }
-        });
-      } else {
-        reject(new Error('Invalid user data'));
-      }
-    }, 500);
-  });
-};
+export default api;
