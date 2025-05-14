@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api, { authService, userService } from '../services/api';
-import { User } from '../types';
+import { JwtPayload, User } from '../types';
 
 // Define the shape of our authentication context
 interface AuthContextType {
@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (accessToken: string, refreshToken: string, email:string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => Promise<void>;
@@ -34,13 +35,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const parseJwt = (token:string) : JwtPayload => {
+      const base64Url = token.split('.')[1]; // Get the payload part
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+  
+      return JSON.parse(jsonPayload);
+  }
+
   // Initialize auth state from localStorage on app startup
   useEffect(() => {
     const initializeAuth = async () => {
       setIsLoading(true);
       try {
-        const storedToken = localStorage.getItem('token');
-        
+        const storedToken = localStorage.getItem('accessToken');
         if (storedToken) {
           // Set the token in axios headers
           api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
@@ -48,7 +62,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           
           // Fetch the current user's profile to verify the token is still valid
           try {
-            const userData = await userService.getProfile();
+            const parsedJwt = parseJwt(storedToken);
+            const userData = await userService.getProfile(parsedJwt.email);
             setUser(userData);
             setIsAuthenticated(true);
           } catch (profileError) {
@@ -75,7 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     try {
       const response = await authService.login({ email, password });
-      const { token: newToken, user: userData } = response;
+      const { tokens: { accessToken: newToken }, user: userData } = response;
       
       // Store in state
       setToken(newToken);
@@ -101,6 +116,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (accessToken: string, refreshToken: string, email:string): Promise<void> => {
+    setToken(accessToken);
+    setUser({email: email, id:1, picture:"", username: ""});
+    setIsAuthenticated(true);
+      
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+      
+    api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      
+    toast.success(`Welcome back, ${email}!`);
+  };
+
   // Register function
   const register = async (username: string, email: string, password: string): Promise<void> => {
     setIsLoading(true);
@@ -108,7 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     try {
       const response = await authService.register({ username, email, password });
-      const { token: newToken, user: userData } = response;
+      const { tokens: { accessToken: newToken }, user: userData } = response;
       
       // Store in state
       setToken(newToken);
@@ -183,7 +211,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     updateUser,
     isLoading,
-    error
+    error,
+    loginWithGoogle
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

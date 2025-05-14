@@ -1,6 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
-import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto } from '../types';
+import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto, GoogleToken } from '../types';
+import { getMockPosts } from './mockData';
 
 // Set base URL from environment variable
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
@@ -39,12 +40,18 @@ export const authService = {
     const response = await api.post<AuthResponse>('/auth/register', credentials);
     return response.data;
   },
+
+  loginWithGoogle: async (credentials: GoogleToken): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>('/auth/google/verify', credentials);
+    return response.data;
+  },
+
 };
 
 // User services
 export const userService = {
-  getProfile: async (): Promise<User> => {
-    const response = await api.get<User>('/users/profile');
+  getProfile: async (email:string): Promise<User> => {
+    const response = await api.get<User>('/users/email?email='+email);
     return response.data;
   },
   
@@ -67,11 +74,18 @@ export const postService = {
   },
   
   getPosts: async (filter: FilterPostsDto = {}): Promise<Post[]> => {
-    const { page = 1, limit = 10, filter: filterType = FilterType.RECENT } = filter;
-    const response = await api.get<Post[]>('/posts', {
-      params: { page, limit, filter: filterType },
+    // const { page = 1, limit = 10, filter: filterType = FilterType.RECENT } = filter;
+    // const response = await api.get<Post[]>('/posts', {
+    //   params: { page, limit, filter: filterType },
+    // });
+    // return response.data;
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Use the mock data generator
+        const posts = getMockPosts(filter.filter || FilterType.POPULAR);
+        resolve(posts);
+      }, 500);
     });
-    return response.data;
   },
   
   getPostById: async (id: number): Promise<Post> => {

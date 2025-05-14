@@ -80,11 +80,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
     setError('');
 
     try {
-      console.log("fffffffffffffffffffffffffffffffffffffffffffff")
-      console.log(selectedOption)
-      console.log(title)
-      console.log(description)
-      console.log(options)
       // Validate form
       if (!title.trim()) {
         throw new Error('Please enter a title');

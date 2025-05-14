@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
-import { http } from '../services/http';
-import API_CONSTANTS from '../services/apiConstants';
+import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/api';
 
 interface LoginProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setUser: (user: User | null) => void;
 }
+
+
 
 interface FormData {
   email: string;
@@ -26,8 +28,10 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
     email: '',
     password: ''
   });
+
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { loginWithGoogle, isAuthenticated} = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -76,15 +80,10 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
   };
 
   const handleSuccess = async (response:any)=>{
-    console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
-    console.log(response);
-    const data = await http.post(
-      `${API_CONSTANTS.VERIFY_GOOGLE_TOKEN}`,
-      {
-        credential: response.credential
-      }
-  );
-    console.log(data);
+  const resp = await authService.loginWithGoogle({credential: response.credential});
+  const { tokens, user } = resp;
+  await loginWithGoogle(tokens.accessToken, tokens.refreshToken, user.email);
+  navigate("/", { replace: true });
   }
 
   const handleError = () => {

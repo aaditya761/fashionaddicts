@@ -4,7 +4,7 @@
 export interface User {
   id: number;
   username: string;
-  email?: string;
+  email: string;
   picture: string;
 }
 
@@ -45,6 +45,10 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface GoogleToken {
+  credential: string;
+}
+
 export interface RegisterCredentials {
   username: string;
   email: string;
@@ -52,7 +56,7 @@ export interface RegisterCredentials {
 }
 
 export interface AuthResponse {
-  token: string;
+  tokens: {accessToken:string; refreshToken: string};
   user: User;
 }
 
@@ -87,4 +91,11 @@ export interface FilterPostsDto {
   page?: number;
   limit?: number;
   filter?: FilterType;
+}
+
+export interface JwtPayload {
+  email: string;
+  exp: number;
+  iat: number;
+  sub: number;
 }

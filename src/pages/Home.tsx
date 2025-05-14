@@ -3,13 +3,15 @@ import { Link } from 'react-router-dom';
 import { postService } from '../services/api';
 import { Post, FilterType, FilterPostsDto } from '../types';
 import '../css/Home.css';
+import { useAuth } from '../context/AuthContext';
+
 
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filter, setFilter] = useState<FilterPostsDto>({page:1, limit:10, filter: FilterType.RECENT});
   const [userVotes, setUserVotes] = useState<Record<number, number>>({});
-
+  const { isAuthenticated } = useAuth();
   // Fetch posts
   useEffect(() => {
     const getPosts = async (): Promise<void> => {
