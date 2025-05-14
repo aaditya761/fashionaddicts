@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User } from '../types';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { http } from '../services/http';
+import API_CONSTANTS from '../services/apiConstants';
 
 interface LoginProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -33,6 +36,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
       [name]: value
     });
   };
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
@@ -69,6 +73,23 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
       setIsSubmitting(false);
     }
   };
+
+  const handleSuccess = async (response:any)=>{
+    console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+    console.log(response);
+    const data = await http.post(
+      `${API_CONSTANTS.VERIFY_GOOGLE_TOKEN}`,
+      {
+        credential: response.credential
+      }
+  );
+    console.log(data);
+  }
+
+  const handleError = () => {
+    console.log('Login Failed');
+  };
+
 
   return (
     <div className="auth-page">
@@ -108,6 +129,18 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
           >
             {isSubmitting ? 'Logging in...' : 'Login'}
           </button>
+
+          
+            <GoogleOAuthProvider clientId="922492381354-0bnc1gec7avgav3nsm5p27m8mmr9jq5u.apps.googleusercontent.com">
+            <GoogleLogin
+          onSuccess={handleSuccess}
+          onError={handleError}
+          useOneTap
+        />
+            </GoogleOAuthProvider>
+          
+
+
         </form>
         
         <div className="auth-footer">

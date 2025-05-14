@@ -14,7 +14,7 @@ import Profile from './pages/Profile';
 import { User } from './types';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   // Check if user is logged in on component mount
