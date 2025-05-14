@@ -114,7 +114,8 @@ export const commentService = {
 // Vote services
 export const voteService = {
   vote: async (postId: number, voteData: CreateVoteDto): Promise<void> => {
-    await api.post(`/posts/${postId}/votes`, voteData);
+    const response = await api.post(`/posts/${postId}/votes`, voteData);
+    return response.data;
   },
   
   getVotes: async (postId: number): Promise<{ optionId: number, count: number }[]> => {

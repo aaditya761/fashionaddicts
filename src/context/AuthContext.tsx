@@ -2,7 +2,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import api, { authService, userService, User } from '../services/api';
+import api, { authService, userService } from '../services/api';
+import { User } from '../types';
 
 // Define the shape of our authentication context
 interface AuthContextType {

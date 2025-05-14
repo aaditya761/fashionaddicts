@@ -1,13 +1,13 @@
 // src/hooks/useVoting.ts
 import { useState, useEffect } from 'react';
-import { voteOnOption } from '../services/api';
-import { Post, Option } from '../types';
+import { voteService } from '../services/api';
+import { Post, Option, CreateVoteDto } from '../types';
 
 interface UseVotingResult {
   hasVoted: boolean;
   selectedOption: number | null;
   totalVotes: number;
-  handleVote: (optionId: number) => Promise<void>;
+  handleVote: (optionId: CreateVoteDto) => Promise<void>;
   getPercentage: (optionId: number) => number;
 }
 
@@ -68,38 +68,16 @@ export const useVoting = (
    * Handle voting for an option
    * @param optionId - The ID of the option to vote for
    */
-  const handleVote = async (optionId: number): Promise<void> => {
+  const handleVote = async (optionId: CreateVoteDto): Promise<void> => {
     if (!post || !isAuthenticated || hasVoted || !userId) {
       return;
     }
     
     try {
       // Call the API to register the vote
-      const response = await voteOnOption(post.id, optionId);
+      await voteService.vote(post.id, optionId);
       
-      if (response.success) {
-        // Update local state
-        setHasVoted(true);
-        setSelectedOption(optionId);
-        
-        // Update options with the new vote count and mark selected option
-        setOptions(prevOptions => 
-          prevOptions.map(option => ({
-            ...option,
-            votes: option.id === optionId ? 1 + 1 : 1,
-            hasUserVoted: option.id === optionId
-          }))
-        );
-        
-        // Store the vote in localStorage
-        const userVotesStr = localStorage.getItem(`votes-${userId}`);
-        const userVotes: UserVotes = userVotesStr 
-          ? JSON.parse(userVotesStr) 
-          : {};
-        
-        userVotes[post.id] = optionId;
-        localStorage.setItem(`votes-${userId}`, JSON.stringify(userVotes));
-      }
+      
     } catch (error) {
       console.error('Error voting:', error);
     }

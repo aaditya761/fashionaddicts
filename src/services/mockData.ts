@@ -13,7 +13,8 @@ export const getMockPosts = (filter: FilterType): Post[] => {
       user: {
         id: 101,
         username: "fashionlover",
-        email: "fashion@example.com"
+        email: "fashion@example.com",
+        picture:""
       },
       options: [
         { 
@@ -52,7 +53,8 @@ export const getMockPosts = (filter: FilterType): Post[] => {
       user: {
         id: 104,
         username: "careergirl",
-        email: "career@example.com"
+        email: "career@example.com",
+        picture:""
       },
       options: [
         { 
@@ -80,7 +82,8 @@ export const getMockPosts = (filter: FilterType): Post[] => {
       user: {
         id: 101,
         username: "fashionlover",
-        email: "fashion@example.com"
+        email: "fashion@example.com",
+        picture:""
       },
       options: [
         { 
@@ -115,7 +118,8 @@ export const getMockPosts = (filter: FilterType): Post[] => {
       user: {
         id: 108,
         username: "travelbug",
-        email: "travel@example.com"
+        email: "travel@example.com",
+        picture:""
       },
       options: [
         { 
@@ -147,7 +151,8 @@ export const getMockPosts = (filter: FilterType): Post[] => {
       user: {
         id: 110,
         username: "gradstudent",
-        email: "student@example.com"
+        email: "student@example.com",
+        picture:""
       },
       options: [
         { 

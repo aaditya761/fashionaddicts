@@ -1,9 +1,8 @@
 // src/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 // Components
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -23,8 +22,13 @@ import { AuthProvider } from './context/AuthContext';
 
 // Styles
 import './App.css';
+import { User } from './types';
 
 const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -34,16 +38,16 @@ const App: React.FC = () => {
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/post/:id" element={<PostDetail />} />
+              <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setUser={setUser} />} />
+              <Route path="/register" element={<Register setIsAuthenticated={setIsAuthenticated} setUser={setUser} />} />
+              <Route path="/post/:id" element={<PostDetail user={user} isAuthenticated={isAuthenticated} />} />
               
               {/* Protected routes */}
               <Route 
                 path="/create-post" 
                 element={
                   <PrivateRoute>
-                    <CreatePost />
+                    <CreatePost user={user} isAuthenticated={isAuthenticated}/>
                   </PrivateRoute>
                 } 
               />
@@ -51,7 +55,7 @@ const App: React.FC = () => {
                 path="/profile" 
                 element={
                   <PrivateRoute>
-                    <Profile />
+                    <Profile user={user} isAuthenticated={isAuthenticated}/>
                   </PrivateRoute>
                 } 
               />

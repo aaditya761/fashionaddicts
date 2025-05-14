@@ -53,7 +53,8 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
         user: {
           id: 1,
           username: 'fashionlover',
-          email: formData.email
+          email: formData.email,
+          picture:""
         }
       };
       

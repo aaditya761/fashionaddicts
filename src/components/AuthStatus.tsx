@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaPlus } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import styles from './AuthStatus.module.css';
+import styles from '../css/AuthStatus.module.css';
 
 const AuthStatus: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -18,9 +18,9 @@ const AuthStatus: React.FC = () => {
             </Link>
             <div className={styles.userDropdown}>
               <div className={styles.userTrigger}>
-                {user.profilePicture ? (
+                {user.picture ? (
                   <img 
-                    src={user.profilePicture} 
+                    src={user.picture} 
                     alt={user.username} 
                     className={styles.profilePic} 
                   />

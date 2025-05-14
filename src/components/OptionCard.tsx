@@ -1,10 +1,10 @@
 import React from 'react';
-import { Option } from '../types';
+import { CreateVoteDto, Option } from '../types';
 
 interface OptionCardProps {
   option: Option;
   index: number;
-  onVote: (optionId: number) => Promise<void>;
+  onVote: (optionId: CreateVoteDto) => Promise<void>;
   hasVoted: boolean;
   isAuthenticated: boolean;
 }
@@ -28,7 +28,7 @@ const OptionCard: React.FC<OptionCardProps> = ({
       return; // User has already voted
     }
     
-    await onVote(option.id);
+    await onVote({optionId:option.id});
   };
   
   return (

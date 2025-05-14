@@ -58,7 +58,8 @@ const Register: React.FC<RegisterProps> = ({ setIsAuthenticated, setUser }) => {
         user: {
           id: Date.now(), // Use numeric ID
           username: formData.username,
-          email: formData.email
+          email: formData.email,
+          picture:""
         }
       };
       

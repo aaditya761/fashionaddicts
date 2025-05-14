@@ -5,6 +5,7 @@ export interface User {
   id: number;
   username: string;
   email?: string;
+  picture: string;
 }
 
 export interface Comment {
