@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../types';
-
-interface ProfileProps {
-  user: User | null;
-  isAuthenticated: boolean;
-}
+import { useAuth } from '../context/AuthContext';
 
 interface UserPost {
   id: number;
@@ -29,7 +24,8 @@ interface UserVote {
   optionVoted: string;
 }
 
-const Profile: React.FC<ProfileProps> = ({ user, isAuthenticated }) => {
+const Profile = () => {
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [userPosts, setUserPosts] = useState<UserPost[]>([]);
   const [userVotes, setUserVotes] = useState<UserVote[]>([]);

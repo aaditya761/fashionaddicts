@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 
-interface RegisterProps {
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-  setUser: (user: User | null) => void;
-}
 
 interface RegisterFormData {
   username: string;
@@ -19,7 +15,7 @@ interface AuthResponse {
   user: User;
 }
 
-const Register: React.FC<RegisterProps> = ({ setIsAuthenticated, setUser }) => {
+const Register =  () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<RegisterFormData>({
     username: '',
@@ -67,9 +63,6 @@ const Register: React.FC<RegisterProps> = ({ setIsAuthenticated, setUser }) => {
       localStorage.setItem('token', mockResponse.token);
       localStorage.setItem('user', JSON.stringify(mockResponse.user));
       
-      // Update app state
-      setIsAuthenticated(true);
-      setUser(mockResponse.user);
       
       // Redirect to home page
       navigate('/');

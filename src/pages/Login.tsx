@@ -1,15 +1,9 @@
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/api';
-
-interface LoginProps {
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-  setUser: (user: User | null) => void;
-}
-
 
 
 interface FormData {
@@ -22,7 +16,7 @@ interface AuthResponse {
   user: User;
 }
 
-const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
+const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -31,7 +25,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
 
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { loginWithGoogle, isAuthenticated} = useAuth();
+  const { loginWithGoogle} = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -66,9 +60,6 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUser }) => {
       localStorage.setItem('token', mockResponse.token);
       localStorage.setItem('user', JSON.stringify(mockResponse.user));
       
-      // Update app state
-      setIsAuthenticated(true);
-      setUser(mockResponse.user);
       
       // Redirect to home page
       navigate('/');

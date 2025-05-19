@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Option } from '../types';
+import { Option } from '../types';
 import Select from 'react-select';
 import '../css/CreatePost.css';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import { useAuth } from '../context/AuthContext';
 
-
-// Define props interface for CreatePost component
-interface CreatePostProps {
-  user: User | null;
-  isAuthenticated: boolean;
-}
-
-const CreatePost: React.FC<CreatePostProps> = ({ user, isAuthenticated }) => {
+const CreatePost = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<{ value: string; label: string; } | null>(null);

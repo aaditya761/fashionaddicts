@@ -3,16 +3,12 @@ import { useParams } from 'react-router-dom';
 import OptionCard from '../components/OptionCard';
 import CommentSection from '../components/CommentSection';
 import { postService, commentService } from '../services/api';
-import { Post, User, Comment } from '../types';
+import { Post, Comment } from '../types';
 import { useVoting } from '../hooks/useVoting';
+import { useAuth } from '../context/AuthContext';
 
-interface PostDetailProps {
-  user: User | null;
-  isAuthenticated: boolean;
-}
-
-const PostDetail: React.FC<PostDetailProps> = ({ user, isAuthenticated }) => {
-  // Get the id parameter and convert to number
+const PostDetail = () => {
+  const { isAuthenticated, user } = useAuth();
   const { id: idParam } = useParams<{ id: string }>();
   const id = idParam ? parseInt(idParam, 10) : 0;
   
