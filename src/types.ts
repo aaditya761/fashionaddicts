@@ -60,6 +60,10 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface AccessTokenResponse {
+  accessToken:string;
+}
+
 export interface CreateOptionDto {
   imageUrl: string;
   description: string;

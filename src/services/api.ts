@@ -1,6 +1,6 @@
 // src/services/api.ts
 import axios from 'axios';
-import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto, GoogleToken } from '../types';
+import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto, GoogleToken, AccessTokenResponse } from '../types';
 import { getMockPosts } from './mockData';
 
 // Set base URL from environment variable
@@ -43,6 +43,11 @@ export const authService = {
 
   loginWithGoogle: async (credentials: GoogleToken): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/google/verify', credentials);
+    return response.data;
+  },
+
+  getAccessToken: async (refreshToken: string): Promise<AccessTokenResponse> => {
+    const response = await api.post<AccessTokenResponse>('/auth/access-token', {"token":refreshToken});
     return response.data;
   },
 

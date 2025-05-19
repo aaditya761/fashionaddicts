@@ -9,7 +9,7 @@ import { JwtPayload, User } from '../types';
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: (accessToken: string, refreshToken: string, email:string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
@@ -31,7 +31,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,26 +50,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return JSON.parse(jsonPayload);
   }
 
+  const isExpiringSoon = (exp: number, thresholdInMinutes = 3): boolean => {
+    const now = Math.floor(Date.now() / 1000);
+    const timeLeft = exp - now;
+    return timeLeft < thresholdInMinutes * 60;
+  };
+
   // Initialize auth state from localStorage on app startup
   useEffect(() => {
     const initializeAuth = async () => {
       setIsLoading(true);
       try {
-        const storedToken = localStorage.getItem('accessToken');
-        if (storedToken) {
-          // Set the token in axios headers
-          api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-          setToken(storedToken);
-          
-          // Fetch the current user's profile to verify the token is still valid
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken') || "";
+        if (accessToken) {
+          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+          setAccessToken(accessToken);
           try {
-            const parsedJwt = parseJwt(storedToken);
+            const parsedJwt = parseJwt(accessToken);
+            if (isExpiringSoon(parsedJwt.exp)){
+                try{
+                  const response = await authService.getAccessToken(refreshToken);
+                  setAccessToken(response.accessToken);
+                  localStorage.setItem('accessToken', response.accessToken);
+                  setIsAuthenticated(true);
+                } catch (tokenError) {
+                  console.error('Error fetching user profile:', tokenError);
+                  handleLogout();
+                }
+            }
             const userData = await userService.getProfile(parsedJwt.email);
             setUser(userData);
             setIsAuthenticated(true);
           } catch (profileError) {
             console.error('Error fetching user profile:', profileError);
-            // If fetching profile fails, the token is likely invalid or expired
             handleLogout();
           }
         }
@@ -90,18 +105,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     try {
       const response = await authService.login({ email, password });
-      const { tokens: { accessToken: newToken }, user: userData } = response;
+      const { tokens: { accessToken: newAccessToken, refreshToken: newRefreshToken }, user: userData } = response;
       
       // Store in state
-      setToken(newToken);
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
       setUser(userData);
       setIsAuthenticated(true);
       
       // Store in localStorage
-      localStorage.setItem('token', newToken);
+      localStorage.setItem('accessToken', newAccessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
       
       // Set the token in axios headers
-      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
       
       // Show success message
       toast.success(`Welcome back, ${userData.username}!`);
@@ -117,7 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const loginWithGoogle = async (accessToken: string, refreshToken: string, email:string): Promise<void> => {
-    setToken(accessToken);
+    setAccessToken(accessToken);
     setUser({email: email, id:1, picture:"", username: ""});
     setIsAuthenticated(true);
       
@@ -136,18 +153,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     try {
       const response = await authService.register({ username, email, password });
-      const { tokens: { accessToken: newToken }, user: userData } = response;
+      const { tokens: { accessToken: newAccessToken, refreshToken: newRefreshToken }, user: userData } = response;
       
       // Store in state
-      setToken(newToken);
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
       setUser(userData);
       setIsAuthenticated(true);
       
       // Store in localStorage
-      localStorage.setItem('token', newToken);
+      localStorage.setItem('accessToken', newAccessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
       
       // Set the token in axios headers
-      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
       
       // Show success message
       toast.success(`Welcome, ${userData.username}! Your account has been created.`);
@@ -165,7 +184,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Logout function
   const handleLogout = () => {
     // Clear state
-    setToken(null);
+    setRefreshToken(null);
+    setAccessToken(null);
     setUser(null);
     setIsAuthenticated(false);
     
@@ -205,7 +225,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     isAuthenticated,
     user,
-    token,
+    accessToken,
     login,
     register,
     logout,
