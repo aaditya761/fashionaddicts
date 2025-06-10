@@ -16,10 +16,21 @@ export interface Comment {
   postId?: number;
   createdAt: string;
 }
+
+export interface LinkPreview{
+  url:string;
+  images:[string];
+  description: string;
+  sitename: string;
+  title: string;
+}
     
 export interface Option {
   id: number;
   url: string;
+  image: string; 
+  productName: string;  
+  siteName: string
 }
   
 export interface Post {
@@ -65,15 +76,13 @@ export interface AccessTokenResponse {
 }
 
 export interface CreateOptionDto {
-  imageUrl: string;
-  description: string;
-  price?: number;
-  store?: string;
   url?: string;
 }
 
 export interface CreatePostDto {
   title: string;
+  description: string;
+  postType: string;
   options: CreateOptionDto[];
 }
 

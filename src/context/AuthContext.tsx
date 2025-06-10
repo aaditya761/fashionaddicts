@@ -3,7 +3,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api, { authService, userService } from '../services/api';
-import { JwtPayload, User } from '../types';
+import {User } from '../types';
+import { isExpiringSoon, parseJwt } from '../utils/utils';
 
 // Define the shape of our authentication context
 interface AuthContextType {
@@ -36,26 +37,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const parseJwt = (token:string) : JwtPayload => {
-      const base64Url = token.split('.')[1]; // Get the payload part
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-  
-      return JSON.parse(jsonPayload);
-  }
-
-  const isExpiringSoon = (exp: number, thresholdInMinutes = 3): boolean => {
-    const now = Math.floor(Date.now() / 1000);
-    const timeLeft = exp - now;
-    return timeLeft < thresholdInMinutes * 60;
-  };
-
   // Initialize auth state from localStorage on app startup
   useEffect(() => {
     const initializeAuth = async () => {
@@ -122,6 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Show success message
       toast.success(`Welcome back, ${userData.username}!`);
+      console.log(refreshToken);
     } catch (err: any) {
       console.error('Login error:', err);
       const errorMessage = err.response?.data?.message || 'Invalid email or password';

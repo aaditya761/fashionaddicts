@@ -1,7 +1,8 @@
 // src/services/api.ts
 import axios from 'axios';
-import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto, GoogleToken, AccessTokenResponse } from '../types';
+import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto, GoogleToken, AccessTokenResponse, CreateOptionDto, LinkPreview } from '../types';
 import { getMockPosts } from './mockData';
+import { isExpiringSoon, parseJwt } from '../utils/utils';
 
 // Set base URL from environment variable
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
@@ -14,12 +15,36 @@ const api = axios.create({
   },
 });
 
+const refreshApi = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+
+
+
 // Add request interceptor for authentication
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+  async (config) => {
+    const accessToken = localStorage.getItem('accessToken') || "";
+    const refreshToken = localStorage.getItem('refreshToken') || "";
+    if (accessToken) {
+      const parsedJwt = parseJwt(accessToken);
+      const isExpiring = isExpiringSoon(parsedJwt.exp)
+      console.log(isExpiring)
+      if (isExpiring){
+        try{
+          const response = await authService.getAccessToken(refreshToken);
+          console.log(response);
+          localStorage.setItem('accessToken', response.accessToken);
+        } catch (tokenError) {
+          console.error('Error fetching user profile:', tokenError);
+        }
+    }
+    
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -46,11 +71,10 @@ export const authService = {
     return response.data;
   },
 
-  getAccessToken: async (refreshToken: string): Promise<AccessTokenResponse> => {
-    const response = await api.post<AccessTokenResponse>('/auth/access-token', {"token":refreshToken});
+  getAccessToken:async (refreshToken: string): Promise<AccessTokenResponse> => {
+    const response = await refreshApi.post<AccessTokenResponse>('/auth/access-token', {"token":refreshToken});
     return response.data;
   },
-
 };
 
 // User services
@@ -75,6 +99,11 @@ export const userService = {
 export const postService = {
   createPost: async (postData: CreatePostDto): Promise<Post> => {
     const response = await api.post<Post>('/posts', postData);
+    return response.data;
+  },
+
+  getLinkPreview: async (url: CreateOptionDto): Promise<LinkPreview> => {
+    const response = await api.post<LinkPreview>('/posts/link-preview', url);
     return response.data;
   },
   

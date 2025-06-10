@@ -6,6 +6,8 @@ import '../css/CreatePost.css';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useAuth } from '../context/AuthContext';
+import api, { postService } from '../services/api';
+
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -14,8 +16,8 @@ const CreatePost = () => {
   const [description, setDescription] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState<{ value: string; label: string; } | null>(null);
   const [options, setOptions] = useState<Option[]>([
-    {id:1, url: ''},
-    {id:2, url: ''}
+    {id:1, url: '', image: '', productName: '', siteName: ''},
+    {id:2, url: '', image: '', productName: '', siteName: ''}
   ]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -40,25 +42,32 @@ const CreatePost = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
 
   const dropdownOptions = [
     { value: 'choose', label: 'Help me choose one' },
     { value: 'look', label: 'How do I look?' },
   ];
 
-  const handleOptionChange = (index: number, field: keyof Option, value: string): void => {
+  const handleOptionChange = async (index: number, field: keyof Option, value: string) => {
+    console.log(index, field, value);
     const newOptions = [...options];
+    if(value){
+      const response = await postService.getLinkPreview({url:value});
+      console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+      console.log(response);
+      console.log(response.title);
+      newOptions[index] = {...newOptions[index], productName: response.title}
+      newOptions[index] = {...newOptions[index], image: response.images[0]}
+      newOptions[index] = {...newOptions[index], siteName: response.sitename}
+    }
     newOptions[index] = { ...newOptions[index], [field]: value };
     setOptions(newOptions);
+    
   };
 
   const addOption = (): void => {
     if (options.length < 5) { // Limit to 5 options
-      setOptions([...options, {id:3, url: '' }]);
+      setOptions([...options, {id:3, url: '', image: '', productName: '', siteName: '' }]);
     }
   };
 
@@ -75,25 +84,20 @@ const CreatePost = () => {
     setError('');
 
     try {
-      // Validate form
-      if (!title.trim()) {
-        throw new Error('Please enter a title');
+      // setIsSubmitting(true);
+      const optionsData = options.map((item)=>{
+        return {url:item.url}
+      })
+      console.log(optionsData)
+      const data = {
+        title:title,
+        description:description,
+        postType: selectedOption?selectedOption.value: "choose",
+        options:optionsData
       }
-      // In a real app, you would call the API here
-      // if (user) {
-      //   const newPost = await createPost({ 
-      //     title, 
-      //     options, 
-      //     userId: user.id 
-      //   });
-      // }
-      
-      // For demo, simulate API call
-      setTimeout(() => {
-        setIsSubmitting(false);
-        navigate('/');
-      }, 1000);
-      
+      const response = await postService.createPost(data);
+      console.log(response);
+      // setIsSubmitting(false);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -154,6 +158,7 @@ const CreatePost = () => {
             <h4>Option {index + 1}</h4>
             <div className="form-group">
               <label>URL</label>
+              {option.image? <img style={{height:"200px", objectFit:"contain"}} alt='' src={option.image} />:null}
               <input
                 type="url"
                 value={option.url}

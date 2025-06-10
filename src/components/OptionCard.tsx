@@ -19,17 +19,6 @@ const OptionCard: React.FC<OptionCardProps> = ({
   /**
    * Handle the vote button click
    */
-  const handleVoteClick = async (): Promise<void> => {
-    if (!isAuthenticated) {
-      return; // User must be authenticated to vote
-    }
-    
-    if (hasVoted) {
-      return; // User has already voted
-    }
-    
-    await onVote({optionId:option.id});
-  };
   
   return (
     <div className="option-card">

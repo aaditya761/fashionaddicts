@@ -20,14 +20,17 @@ export const getMockPosts = (filter: FilterType): Post[] => {
         { 
           id: 1001, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg",  
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 1002, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg",  
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 1003, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg",  
+          image: '', productName: '', siteName: ''
         }
       ],
       comments: [
@@ -60,10 +63,12 @@ export const getMockPosts = (filter: FilterType): Post[] => {
         { 
           id: 2001, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg",  
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 2002, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         }
       ],
       comments: [
@@ -89,10 +94,12 @@ export const getMockPosts = (filter: FilterType): Post[] => {
         { 
           id: 3001, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 3002, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg",
+          image: '', productName: '', siteName: ''
         }
       ],
       comments: [
@@ -125,14 +132,17 @@ export const getMockPosts = (filter: FilterType): Post[] => {
         { 
           id: 4001, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 4002, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 4003, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         }
       ],
       comments: [
@@ -158,10 +168,12 @@ export const getMockPosts = (filter: FilterType): Post[] => {
         { 
           id: 5001, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         },
         { 
           id: 5002, 
           url: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28219632/2024/3/12/9da6c838-2e37-451c-91ee-619d95be9a2b1710256687563CampusSutraMenClassicOpaqueCheckedCasualShirt4.jpg", 
+          image: '', productName: '', siteName: ''
         }
       ],
       comments: [
