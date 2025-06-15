@@ -17,11 +17,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ comments, postId, user,
     e.preventDefault();
     if (newComment.trim() && user) {
       onAddComment({
-        text: newComment,
-        userId: user.id,
-        username: user.username,
-        postId,
-        createdAt: new Date().toISOString()
+        text: newComment
       });
       setNewComment('');
     }
@@ -50,7 +46,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ comments, postId, user,
           comments.map((comment, index) => (
             <div key={index} className="comment">
               <div className="comment-header">
-                <span className="username">{comment.username}</span>
+                <span className="username">{comment.user.username}</span>
                 <span className="date">{new Date(comment.createdAt).toLocaleDateString()}</span>
               </div>
               <p className="comment-text">{comment.text}</p>

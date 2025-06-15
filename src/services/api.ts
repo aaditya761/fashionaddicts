@@ -1,7 +1,6 @@
 // src/services/api.ts
 import axios from 'axios';
 import { Post, Comment, AuthResponse, LoginCredentials, RegisterCredentials, User, CreatePostDto, FilterPostsDto, FilterType, CreateVoteDto, GoogleToken, AccessTokenResponse, CreateOptionDto, LinkPreview } from '../types';
-import { getMockPosts } from './mockData';
 import { isExpiringSoon, parseJwt } from '../utils/utils';
 
 // Set base URL from environment variable
@@ -108,18 +107,18 @@ export const postService = {
   },
   
   getPosts: async (filter: FilterPostsDto = {}): Promise<Post[]> => {
-    // const { page = 1, limit = 10, filter: filterType = FilterType.RECENT } = filter;
-    // const response = await api.get<Post[]>('/posts', {
-    //   params: { page, limit, filter: filterType },
-    // });
-    // return response.data;
-    return new Promise((resolve) => {
-      setTimeout(() => {
+     const { page = 1, limit = 10, filter: filterType = FilterType.RECENT } = filter;
+     const response = await api.get<{posts:Post[], total:number}>('/posts', {
+       params: { page, limit, filter: filterType },
+     });
+     return response.data.posts;
+    //return new Promise((resolve) => {
+    //  setTimeout(() => {
         // Use the mock data generator
-        const posts = getMockPosts(filter.filter || FilterType.POPULAR);
-        resolve(posts);
-      }, 500);
-    });
+    //    const posts = getMockPosts(filter.filter || FilterType.POPULAR);
+    //    resolve(posts);
+    //  }, 500);
+    //});
   },
   
   getPostById: async (id: number): Promise<Post> => {

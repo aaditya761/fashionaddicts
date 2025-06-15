@@ -11,8 +11,11 @@ export interface User {
 export interface Comment {
   id: number;
   text: string;
-  userId: number;
-  username: string;
+  user: {
+    id: number;
+    username: string;
+    picture: string
+  };
   postId?: number;
   createdAt: string;
 }
@@ -30,7 +33,8 @@ export interface Option {
   url: string;
   image: string; 
   productName: string;  
-  siteName: string
+  siteName: string;
+  votesCount: number;
 }
   
 export interface Post {
@@ -39,6 +43,9 @@ export interface Post {
   user: User,
   options: Option[];
   comments: Comment[];
+  createdAt: Date;
+  hasUserVoted: boolean;
+  votedOption: Option;
 }
   
 export interface PostDetailProps {

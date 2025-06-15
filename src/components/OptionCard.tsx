@@ -22,7 +22,7 @@ const OptionCard: React.FC<OptionCardProps> = ({
   
   return (
     <div className="option-card">
-      <img src={option.url} alt={`Option ${index}`} />
+      <img src={option.image} alt={`Option ${index}`} />
       <div className="option-info">
         <h4>Option {index}</h4>
         <div className="option-meta">
